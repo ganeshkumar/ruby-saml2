@@ -63,7 +63,7 @@ module SAML2
       # see if any given fingerprints match the certificate embedded in the XML;
       # if so, extract the certificate, and add it to the allowed certificates list
       Array(fingerprint).each do |fp|
-        certs << signing_key.certificate if signing_key&.fingerprint == SAML2::KeyInfo.format_fingerprint(fp)
+        certs << signing_key.certificate if signing_key.try(:fingerprint) == SAML2::KeyInfo.format_fingerprint(fp)
       end
       certs = certs.uniq
 
@@ -71,7 +71,7 @@ module SAML2
         cert = cert.is_a?(String) ? OpenSSL::X509::Certificate.new(cert) : cert
         cert.public_key.to_s
       end
-      if signing_key&.certificate && trusted_keys.include?(signing_key.certificate.public_key.to_s)
+      if signing_key.try(:certificate) && trusted_keys.include?(signing_key.certificate.public_key.to_s)
         key ||= signing_key.certificate.public_key.to_s
       end
       # signature doesn't say who signed it. hope and pray it's with the only certificate

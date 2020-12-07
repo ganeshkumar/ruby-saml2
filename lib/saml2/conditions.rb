@@ -81,7 +81,7 @@ module SAML2
     class Condition < Base
       # @return []
       def validate(_)
-        ["unable to validate #{xml&.name || 'unrecognized'} condition"]
+        ["unable to validate #{xml.try(:name) || 'unrecognized'} condition"]
       end
 
       def valid?(*args)

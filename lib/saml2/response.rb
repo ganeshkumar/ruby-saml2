@@ -121,9 +121,9 @@ module SAML2
       raise ArgumentError, "identity_provider should be an Entity object" unless identity_provider.is_a?(Entity)
       raise ArgumentError, "identity_provider should have at least one identity_provider role" unless (idp = identity_provider.identity_providers.first)
 
-      issuer = self.issuer || assertions.first&.issuer
-      unless identity_provider.entity_id == issuer&.id
-        errors << "received unexpected message from '#{issuer&.id}'; expected it to be from '#{identity_provider.entity_id}'"
+      issuer = self.issuer || assertions.first.try(:issuer)
+      unless identity_provider.entity_id == issuer.try(:id)
+        errors << "received unexpected message from '#{issuer.try(:id)}'; expected it to be from '#{identity_provider.entity_id}'"
         return errors
       end
 
@@ -144,7 +144,7 @@ module SAML2
       assertion = assertions.first
 
       # this might be nil, if the assertion was encrypted
-      if assertion&.signed?
+      if assertion.try(:signed?)
         unless (signature_errors = assertion.validate_signature(fingerprint: idp.fingerprints,
                                                                 cert: certificates)).empty?
           return errors.concat(signature_errors)
@@ -210,7 +210,7 @@ module SAML2
 
       # only do our own issue instant validation if the assertion
       # doesn't mandate any
-      unless assertion.conditions&.not_on_or_after
+      unless assertion.conditions.try(:not_on_or_after)
         if assertion.issue_instant +  5 * 60 < verification_time ||
             assertion.issue_instant - 5 * 60 > verification_time
           errors << "assertion not recently issued"

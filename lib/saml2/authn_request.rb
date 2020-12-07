@@ -111,7 +111,7 @@ module SAML2
     # @return [Integer, nil]
     def assertion_consumer_service_index
       if xml && !instance_variable_defined?(:@assertion_consumer_service_index)
-        @assertion_consumer_service_index = xml['AssertionConsumerServiceIndex']&.to_i
+        @assertion_consumer_service_index = xml['AssertionConsumerServiceIndex'].try(:to_i)
       end
       @assertion_consumer_service_index
     end
@@ -127,7 +127,7 @@ module SAML2
     # @return [Integer, nil]
     def attribute_consuming_service_index
       if xml && !instance_variable_defined?(:@attribute_consuming_service_index)
-        @attribute_consuming_service_index = xml['AttributeConsumingServiceIndex']&.to_i
+        @attribute_consuming_service_index = xml['AttributeConsumingServiceIndex'].try(:to_i)
       end
       @attribute_consuming_service_index
     end
@@ -135,7 +135,7 @@ module SAML2
     # @return [true, false, nil]
     def force_authn?
       if xml && !instance_variable_defined?(:@force_authn)
-        @force_authn = xml['ForceAuthn']&.== 'true'
+        @force_authn = xml['ForceAuthn'].try(:to_s)== 'true'
       end
       @force_authn
     end
@@ -143,7 +143,7 @@ module SAML2
     # @return [true, false, nil]
     def passive?
       if xml && !instance_variable_defined?(:@passive)
-        @passive = xml['IsPassive']&.== 'true'
+        @passive = xml['IsPassive'].try(:to_s)== 'true'
       end
       @passive
     end

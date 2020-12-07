@@ -74,7 +74,7 @@ responses.each_with_index do |response_raw, i|
     next
   end
 
-  next if ignored_idps.include?(response.issuer&.id)
+  next if ignored_idps.include?(response.issuer.try(:id))
 
   non_ignored_count += 1
 
@@ -82,11 +82,11 @@ responses.each_with_index do |response_raw, i|
 
   # TODO: ignore audience restrictions
   errors = response.validate(service_provider: service_provider_entity,
-                             identity_provider: idps[response.issuer&.id],
+                             identity_provider: idps[response.issuer.try(:id)],
                              verification_time: verification_time)
   unless errors.empty?
-    bad_counts[response.issuer&.id] += 1
-    STDERR.puts "#{errors.inspect} for response #{response.id} from #{response.issuer&.id} (index #{i})"
+    bad_counts[response.issuer.try(:id)] += 1
+    STDERR.puts "#{errors.inspect} for response #{response.id} from #{response.issuer.try(:id)} (index #{i})"
   end
 end
 

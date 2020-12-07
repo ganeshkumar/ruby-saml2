@@ -52,17 +52,17 @@ module SAML2
 
           raise MissingMessage unless uri.query
           query = URI.decode_www_form(uri.query)
-          base64 = query.assoc('SAMLRequest')&.last
+          base64 = query.assoc('SAMLRequest').try(:last)
           if base64
             message_param = 'SAMLRequest'
           else
-            base64 = query.assoc('SAMLResponse')&.last
+            base64 = query.assoc('SAMLResponse').try(:last)
             message_param = 'SAMLResponse'
           end
-          encoding = query.assoc('SAMLEncoding')&.last
-          relay_state = query.assoc('RelayState')&.last
-          signature = query.assoc('Signature')&.last
-          sig_alg = query.assoc('SigAlg')&.last
+          encoding = query.assoc('SAMLEncoding').try(:last)
+          relay_state = query.assoc('RelayState').try(:last)
+          signature = query.assoc('Signature').try(:last)
+          sig_alg = query.assoc('SigAlg').try(:last)
           raise MissingMessage unless base64
 
           raise UnsupportedEncoding if encoding && encoding != Encodings::DEFLATE
@@ -115,7 +115,7 @@ module SAML2
               hash = (sig_alg == SigAlgs::RSA_SHA256 ? OpenSSL::Digest::SHA256 : OpenSSL::Digest::SHA1)
               if key.verify(hash.new, signature, base_string)
                 # notify the caller which certificate was used
-                public_key_used&.call(key)
+                public_key_used.call(key)
                 valid_signature = true
                 break
               end

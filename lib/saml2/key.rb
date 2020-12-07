@@ -19,11 +19,11 @@ module SAML2
 
     # (see Base#from_xml)
     def from_xml(node)
-      self.x509 = node.at_xpath('dsig:KeyInfo/dsig:X509Data/dsig:X509Certificate', Namespaces::ALL)&.content&.strip
+      self.x509 = node.at_xpath('dsig:KeyInfo/dsig:X509Data/dsig:X509Certificate', Namespaces::ALL).try(:content).try(:strip)
     end
 
     def x509=(value)
-      @x509 = value&.gsub(/\w*-+(BEGIN|END) CERTIFICATE-+\w*/, "")&.strip
+      @x509 = value.gsub(/\w*-+(BEGIN|END) CERTIFICATE-+\w*/, "").strip if value.present?
     end
 
     # @return [OpenSSL::X509::Certificate]
@@ -80,7 +80,7 @@ module SAML2
       # (see Base#from_xml)
       def from_xml(node)
         self.algorithm = node['Algorithm']
-        self.key_size = node.at_xpath('xenc:KeySize', Namespaces::ALL)&.content&.to_i
+        self.key_size = node.at_xpath('xenc:KeySize', Namespaces::ALL).try(:content).try(:to_i)
       end
 
       # (see Base#build)

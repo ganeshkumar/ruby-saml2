@@ -33,7 +33,7 @@ module SAML2
       @authn_instant = Time.parse(node['AuthnInstant'])
       @session_index = node['SessionIndex']
       @session_not_on_or_after = Time.parse(node['SessionNotOnOrAfter']) if node['SessionNotOnOrAfter']
-      @authn_context_class_ref = node.at_xpath('saml:AuthnContext/saml:AuthnContextClassRef', Namespaces::ALL)&.content&.strip
+      @authn_context_class_ref = node.at_xpath('saml:AuthnContext/saml:AuthnContextClassRef', Namespaces::ALL).try(:content).try(:strip)
     end
 
     # (see Base#build)

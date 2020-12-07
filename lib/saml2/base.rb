@@ -108,14 +108,14 @@ module SAML2
         this_nodes_keys = keys
         if keys.nil?
           allowed_certs = node.xpath("dsig:KeyInfo/xenc:EncryptedKey/dsig:KeyInfo/dsig:X509Data", SAML2::Namespaces::ALL).map do |x509data|
-            if (cert = x509data.at_xpath("dsig:X509Certificate", SAML2::Namespaces::ALL)&.content&.strip)
+            if (cert = x509data.at_xpath("dsig:X509Certificate", SAML2::Namespaces::ALL).try(:content).try(:strip))
               OpenSSL::X509::Certificate.new(Base64.decode64(cert))
             elsif (issuer_serial = x509data.at_xpath("dsig:X509IssuerSerial", SAML2::Namespaces::ALL))
               {
                   issuer: issuer_serial.at_xpath("dsig:X509IssuerName", SAML2::Namespaces::ALL).content.strip,
                   serial: issuer_serial.at_xpath("dsig:X509SerialNumber", SAML2::Namespaces::ALL).content.strip.to_i,
               }
-            elsif (subject_name = x509data.at_xpath("dsig:X509SubjectName", SAML2::Namespaces::ALL)&.content&.strip)
+            elsif (subject_name = x509data.at_xpath("dsig:X509SubjectName", SAML2::Namespaces::ALL).try(:content).try(:strip))
               subject_name
             end
           end
@@ -139,7 +139,7 @@ module SAML2
 
     def self.load_string_array(node, element)
       node.xpath(element, Namespaces::ALL).map do |element_node|
-        element_node.content&.strip
+        element_node.content.try(:strip)
       end
     end
 

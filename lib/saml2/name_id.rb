@@ -33,7 +33,7 @@ module SAML2
       # @return [Boolean, nil]
       def allow_create?
         if xml && !instance_variable_defined?(:@allow_create)
-          @allow_create = xml['AllowCreate']&.== 'true'
+          @allow_create = xml['AllowCreate'].try(:to_s)== 'true'
         end
         @allow_create
       end
